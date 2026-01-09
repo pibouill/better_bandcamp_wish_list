@@ -11,55 +11,49 @@
 // ************************************************************************** //
 
 import bcfetch from 'bandcamp-fetch';
-bcfetch.limiter.updateSettings({
-  maxConcurrent: 3,    // Max simultaneous requests
-  minTime: 500         // 500ms between requests
-});
-
 import { writeFileSync } from 'fs';
 
-async function backupWishlist(username) {
+bcfetch.limiter.updateSettings({ maxConcurrent: 3, minTime: 500 });  // Rate limit
+
+const username = process.argv[2];
+if (!username) {
+  console.error('Usage: node bc_fetch.mjs <username>');
+  process.exit(1);
+}
+
+async function backup() {
   const fan = bcfetch.fan;
   let target = username;
   const allItems = [];
 
-  console.log(`Fetching wishlist for ${username}...\n`);
+  console.log(`🔍 Fetching https://bandcamp.com/${username}/wishlist...\n`);
 
   while (true) {
-    const res = await fan.getWishlist({ target });  // Fetches albums/tracks; supports continuation [page:1]
-    allItems.push(...res.items);
-    console.log(`Fetched ${res.items.length} items (total: ${allItems.length})`);
+    const res = await fan.getWishlist({ target });
+    allItems.push(...(res.items || []));
+    console.log(`📦 ${res.items?.length || 0} items (total: ${allItems.length})`);
 
-    if (!res.continuation) {
-      console.log('\nComplete!');
-      break;
-    }
+    if (!res.continuation) break;
     target = res.continuation;
   }
 
-  // Save as JSON
-  writeFileSync('wishlist-backup.json', JSON.stringify(allItems, null, 2));
-  console.log('Saved to wishlist-backup.json');
+  // JSON (full data)
+  writeFileSync('wishlist.json', JSON.stringify(allItems, null, 2));
+  console.log('✅ Full data → wishlist.json');
 
-  // Optional: Convert to CSV (artist, album, url, price)
-  const csv = [
-    'artist,title,url,current_price,original_price',
-    ...allItems.map(item => [
-      item.artist?.name || '',
-      item.title || '',
-      item.url || '',
-      item.current?.price || '',
-      item.original?.price || ''
-    ].join(','))
-  ].join('\n');
-  writeFileSync('wishlist-backup.csv', csv);
-  console.log('Saved to wishlist-backup.csv');
+  // FIXED GitHub CSV
+  const headers = ['artist', 'title', 'url', 'current_price', 'original_price', 'release_date'];
+  const csvRows = allItems.map(item => [
+    `"${(item.artist?.name || '').replace(/"/g, '""')}"`,
+    `"${(item.title || '').replace(/"/g, '""')}"`,
+    `"${item.url || ''}"`,
+    `"${item.current?.price || ''}"`,
+    `"${item.original?.price || ''}"`,
+    `"${item.releaseDate || ''}"`
+  ].join(','));
+  const csvContent = [headers.join(','), ...csvRows].join('\n');
+  writeFileSync('wishlist.csv', csvContent);
+  console.log('✅ GitHub-ready CSV → wishlist.csv');
 }
 
-const username = process.argv[2];  // Run as: node backup-wishlist.js yourusername
-if (!username) {
-  console.error('Usage: node backup-wishlist.js <your_bandcamp_username>');
-  process.exit(1);
-}
-
-backupWishlist(username);
+backup().catch(console.error);
