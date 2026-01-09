@@ -1,0 +1,16 @@
+{
+  "name": "bandcamp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bc_fetch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bandcamp-fetch": "^3.0.0"
+  }
+}
