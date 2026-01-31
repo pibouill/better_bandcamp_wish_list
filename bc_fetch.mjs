@@ -11,9 +11,9 @@
 // ************************************************************************** //
 
 import bcfetch from 'bandcamp-fetch';
-import { writeFile } from 'fs/promises';
+import { writeFileSync, existsSync, readFileSync } from 'fs';
 
-bcfetch.limiter.updateSettings({ maxConcurrent: 3, minTime: 500 });
+bcfetch.limiter.updateSettings({ maxConcurrent: 8, minTime: 200 });
 
 const username = process.argv[2];
 if (!username) {
@@ -21,45 +21,68 @@ if (!username) {
   process.exit(1);
 }
 
-const escapeCsv = (val) => `"${String(val || '').replace(/"/g, '""')}"`;
-
 async function backup() {
   const fan = bcfetch.fan;
+  bcfetch.setCookie('identity=7%09nlywcyxBhNCUySPCRqMZTKnQ6zGbx5vrnRUd2SofZn4%3D%09%7B%22id%22%3A2442402288%2C%22ex%22%3A0%7D; js_logged_in=1');
+  
   let target = username;
   const allItems = [];
+  let pages = 0;
+  const maxPages = 100;
 
-  console.log(`🔍 Fetching https://bandcamp.com/${username}/wishlist...\n`);
+  console.log(`⚡ FAST MODE: https://bandcamp.com/${username}/wishlist\n`);
 
-  while (target) {
+  while (target && pages++ < maxPages && allItems.length < 1500) {
     const res = await fan.getWishlist({ target });
-    const items = res.items || [];
-    allItems.push(...items);
-    console.log(`📦 ${items.length} items (total: ${allItems.length})`);
-
-    target = res.continuation || null;
+    
+    if (res.items?.length) {
+      allItems.push(...res.items);
+      console.log(`📦 ${allItems.length} items (${pages} pages)`);
+    }
+    
+    target = res.continuation;
+    await new Promise(r => setTimeout(r, 150));
   }
 
-  // Prepare file writes concurrently
-  const writeJson = writeFile('wishlist.json', JSON.stringify(allItems, null, 2))
-    .then(() => console.log('✅ Full data → wishlist.json'));
+  // 📊 CHANGE DETECTION
+  let changes = { added: 0, removed: 0, totalNew: allItems.length };
+  
+  if (existsSync('wishlist.json')) {
+    const oldItems = JSON.parse(readFileSync('wishlist.json', 'utf8'));
+    const oldUrls = new Set(oldItems.map(item => item.url));
+    const newUrls = new Set(allItems.map(item => item.url));
+    
+    // Count additions/removals
+    for (const url of newUrls) if (!oldUrls.has(url)) changes.added++;
+    for (const url of oldUrls) if (!newUrls.has(url)) changes.removed++;
+    
+    console.log(`\n📊 CHANGES:`);
+    console.log(`➕ Added: ${changes.added} items`);
+    console.log(`➖ Removed: ${changes.removed} items`);
+    console.log(`📈 Total now: ${allItems.length} (was ${oldItems.length})`);
+    console.log(`🔄 Net change: ${allItems.length - oldItems.length} items`);
+  } else {
+    console.log(`\n📊 NEW BACKUP: ${allItems.length} items (first time)`);
+  }
 
-  const csvHeaders = ['artist', 'title', 'url', 'current_price', 'original_price', 'release_date'];
-  const csvContent = [
-    csvHeaders.join(','),
-    ...allItems.map(item => [
-      escapeCsv(item.artist?.name),
-      escapeCsv(item.title),
-      escapeCsv(item.url),
-      escapeCsv(item.current?.price),
-      escapeCsv(item.original?.price),
-      escapeCsv(item.releaseDate)
-    ].join(','))
-  ].join('\n');
-
-  const writeCsv = writeFile('wishlist.csv', csvContent)
-    .then(() => console.log('✅ GitHub-ready CSV → wishlist.csv'));
-
-  await Promise.all([writeJson, writeCsv]);
+  // Save files
+  writeFileSync('wishlist.json', JSON.stringify(allItems, null, 2));
+  
+  const headers = ['type', 'artist', 'title', 'url', 'current_price', 'original_price', 'release_date'];
+  const csvRows = allItems.map(item => [
+    `"${item.type || 'unknown'}"`,
+    `"${(item.artist?.name || '').replace(/"/g, '""')}"`,
+    `"${(item.type === 'track' ? item.name : item.title || '').replace(/"/g, '""')}"`,
+    `"${item.url || ''}"`,
+    `"${item.current?.price || ''}"`,
+    `"${item.original?.price || ''}"`,
+    `"${item.releaseDate || ''}"`
+  ].join(','));
+  
+  writeFileSync('wishlist.csv', [headers.join(','), ...csvRows].join('\n'));
+  
+  console.log(`\n🎉 DONE: ${allItems.length} items saved!`);
 }
 
 backup().catch(console.error);
+
