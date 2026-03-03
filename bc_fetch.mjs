@@ -32,7 +32,7 @@ async function backup() {
 
   console.log(`⚡ FAST MODE: https://bandcamp.com/${username}/wishlist\n`);
 
-  while (target && pages++ < maxPages && allItems.length < 1500) {
+  while (target && pages++ < maxPages) {
     const res = await fan.getWishlist({ target });
     
     if (res.items?.length) {
