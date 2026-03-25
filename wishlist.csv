@@ -1,4 +1,9 @@
 type,artist,title,url,current_price,original_price,release_date
+"track","L.S.G.","Wrong Time...Wrong Place","https://oliverlieb.bandcamp.com/track/wrong-time-wrong-place","","",""
+"track","Farron","C.I.T.G","https://shawcuts.bandcamp.com/track/c-i-t-g","","",""
+"track","Guy Contact & Solar Suite","Liana's Cove","https://waxoparadiso.bandcamp.com/track/lianas-cove","","",""
+"track","Gan D","Supraluminal Soar","https://hyperwaves.bandcamp.com/track/supraluminal-soar","","",""
+"album","A Strange Wedding","","https://biofieldrecords.bandcamp.com/album/a-strange-wedding-the-null-zone-biofield-001","","",""
 "album","HOMI","","https://patternsofperception.bandcamp.com/album/v-litila","","",""
 "track","Nali","Gwen","https://patternsofperception.bandcamp.com/track/gwen","","",""
 "track","Nali","Skyline","https://patternsofperception.bandcamp.com/track/skyline","","",""
@@ -62,7 +67,7 @@ type,artist,title,url,current_price,original_price,release_date
 "track","Diego Krause","Diego Krause - Nihilate","https://unisonwax.bandcamp.com/track/diego-krause-nihilate","","",""
 "album","Diego Krause","","https://unisonwax.bandcamp.com/album/unison-wax-04-uw04","","",""
 "album","Paul Brtschitsch","","https://paulbrtschitsch.bandcamp.com/album/die-erinnerung-2","","",""
-"album","Pureblast (ex Baraka)","","https://pureblast.bandcamp.com/album/feel-nice","","",""
+"album","Pureblast","","https://pureblast.bandcamp.com/album/feel-nice","","",""
 "track","Cantrip People","The fundamentalist","https://robertleiner.bandcamp.com/track/the-fundamentalist","","",""
 "track","Paragliders","Share of Bitterness - Flyer Mix","https://oliverlieb.bandcamp.com/track/share-of-bitterness-flyer-mix","","",""
 "album","dyLAB","","https://analog-records.bandcamp.com/album/analog-48-stand-like-colossus","","",""
