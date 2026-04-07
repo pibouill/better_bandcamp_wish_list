@@ -68,37 +68,37 @@
   <title>Better Bandcamp Wishlist</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-  <div class="max-w-md w-full">
-    <div class="text-center mb-8">
-      <div class="text-6xl mb-4">🎵</div>
-      <h1 class="text-3xl font-bold text-white mb-2">Better Bandcamp Wishlist</h1>
-      <p class="text-gray-400">View and explore any Bandcamp wishlist beautifully</p>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4 sm:p-6">
+  <div class="max-w-sm sm:max-w-md w-full">
+    <div class="text-center mb-6 sm:mb-8">
+      <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🎵</div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-display">Better Bandcamp Wishlist</h1>
+      <p class="text-gray-400 text-sm sm:text-base font-body">View and explore any Bandcamp wishlist beautifully</p>
     </div>
 
-    <div class="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700">
+    <div class="bg-gray-800 rounded-xl p-5 sm:p-6 shadow-2xl border border-gray-700">
       <form on:submit|preventDefault={handleSubmit} class="space-y-4">
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-300 mb-1">
+          <label for="username" class="block text-sm font-medium text-gray-300 mb-1.5 font-body">
             Bandcamp Username
           </label>
           <input
             id="username"
             type="text"
             bind:value={username}
-            placeholder="Enter username (e.g., yourname)"
-            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            placeholder="e.g., yourname (from bandcamp.com/yourname)"
+            class="w-full px-3 py-3 sm:py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-body text-sm"
           />
         </div>
 
         {#if needCookie || cookie}
           <div>
-            <label for="cookie" class="block text-sm font-medium text-gray-300 mb-1">
+            <label for="cookie" class="block text-sm font-medium text-gray-300 mb-1.5 font-body">
               Identity Cookie
               <button
                 type="button"
                 on:click={() => (showCookieModal = true)}
-                class="text-amber-400 hover:text-amber-300 text-xs ml-2"
+                class="text-amber-400 hover:text-amber-300 text-xs ml-1 sm:ml-2"
               >
                 How to get?
               </button>
@@ -108,13 +108,13 @@
               type="password"
               bind:value={cookie}
               placeholder="Paste your cookie to view private wishlist"
-              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              class="w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-body text-sm"
             />
           </div>
         {/if}
 
         {#if error}
-          <div class="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div class="bg-red-900/50 border border-red-700 text-red-200 px-3 py-2.5 rounded-lg text-sm font-body">
             {error}
           </div>
         {/if}
@@ -122,7 +122,7 @@
         <button
           type="submit"
           disabled={loading}
-          class="w-full bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          class="w-full bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-body"
         >
           {#if loading}
             <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -147,16 +147,16 @@
       </div>
     </div>
 
-    <p class="text-center text-gray-500 text-xs mt-6">
-      Your credentials are stored locally in your browser. Never sent to any server.
+    <p class="text-center text-gray-500 text-[10px] sm:text-xs mt-5 sm:mt-6 font-body">
+      Your credentials are stored locally. Never sent to any server.
     </p>
 
-    <p class="text-center text-gray-500 text-xs mt-2">
-      Powered by the Bandcamp API. Thanks to Bandcamp for making this possible.
+    <p class="text-center text-gray-500 text-[10px] sm:text-xs mt-2 font-body">
+      Powered by the Bandcamp API. Thanks to Bandcamp.
     </p>
 
-    <div class="flex justify-center gap-4 mt-4 text-sm">
-      <a href="/privacy" class="text-gray-500 hover:text-gray-400">Privacy Policy</a>
+    <div class="flex justify-center gap-4 mt-4 text-xs sm:text-sm font-body">
+      <a href="/privacy" class="text-gray-500 hover:text-gray-400">Privacy</a>
       <a href="https://github.com/pibouill/better_bandcamp_wish_list" target="_blank" class="text-gray-500 hover:text-gray-400 flex items-center gap-1">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         GitHub
@@ -177,36 +177,58 @@
     <div class="bg-gray-800 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-700">
       <div class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-white">How to get your Bandcamp cookie</h2>
+          <h2 class="text-xl font-bold text-white">How to view a private wishlist</h2>
           <button on:click={() => (showCookieModal = false)} class="text-gray-400 hover:text-white text-2xl">
             &times;
           </button>
         </div>
 
-        <div class="text-gray-300 space-y-4 text-sm">
-          <p>To view a private wishlist, you need to provide your Bandcamp authentication cookie.</p>
+        <div class="text-gray-300 space-y-4">
+          <p class="text-gray-400">Bandcamp requires a "cookie" to view private wishlists. Here's how to get it:</p>
 
-          <div class="bg-gray-900 rounded-lg p-4 space-y-3">
-            <p><span class="text-amber-400 font-bold">Step 1:</span> Open <a href="https://bandcamp.com" target="_blank" class="text-amber-400 underline">bandcamp.com</a> in your browser and log in</p>
+          <div class="bg-gray-900 rounded-lg p-4 space-y-4">
+            <div class="flex items-start gap-3">
+              <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">1</span>
+              <div>
+                <p class="font-medium text-white">Open Bandcamp and log in</p>
+                <a href="https://bandcamp.com" target="_blank" class="text-amber-400 hover:underline text-sm">Click here to open Bandcamp →</a>
+              </div>
+            </div>
             
-            <p><span class="text-amber-400 font-bold">Step 2:</span> Press <kbd class="bg-gray-700 px-2 py-1 rounded text-white">F12</kbd> to open Developer Tools</p>
+            <div class="flex items-start gap-3">
+              <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">2</span>
+              <div>
+                <p class="font-medium text-white">Open Developer Tools</p>
+                <p class="text-gray-400 text-sm">Press the <kbd class="bg-gray-700 px-2 py-1 rounded text-white text-xs">F12</kbd> key (or right-click → Inspect)</p>
+              </div>
+            </div>
             
-            <p><span class="text-amber-400 font-bold">Step 3:</span> Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox)</p>
+            <div class="flex items-start gap-3">
+              <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">3</span>
+              <div>
+                <p class="font-medium text-white">Find the cookie</p>
+                <p class="text-gray-400 text-sm">Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox), then expand <strong>Cookies</strong> → <strong>bandcamp.com</strong></p>
+              </div>
+            </div>
             
-            <p><span class="text-amber-400 font-bold">Step 4:</span> Expand <strong>Cookies</strong> → <strong>bandcamp.com</strong></p>
-            
-            <p><span class="text-amber-400 font-bold">Step 5:</span> Find and copy the value of the <code class="bg-gray-700 px-1 rounded">identity</code> cookie</p>
+            <div class="flex items-start gap-3">
+              <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">4</span>
+              <div>
+                <p class="font-medium text-white">Copy the identity cookie</p>
+                <p class="text-gray-400 text-sm">Find the row with name <code class="bg-gray-700 px-1 rounded text-white">identity</code> and double-click the Value column to copy it</p>
+              </div>
+            </div>
           </div>
 
           <div class="bg-amber-900/30 border border-amber-700 rounded-lg p-3">
-            <p class="text-amber-200"><strong>Note:</strong> This cookie is stored only in your browser - it's never sent to any server except Bandcamp directly.</p>
+            <p class="text-amber-200 text-sm">🔒 Your cookie is stored only in your browser - we never see it!</p>
           </div>
 
           <button
             on:click={() => (showCookieModal = false)}
-            class="w-full bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold py-2 px-4 rounded-lg mt-4"
+            class="w-full bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold py-3 px-4 rounded-lg"
           >
-            Got it!
+            I got it - let's go!
           </button>
         </div>
       </div>

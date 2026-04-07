@@ -49,10 +49,11 @@ export async function GET({ url }) {
       type: item.type,
       id: item.id,
       name: item.name || item.title,
+      title: item.title,
       url: item.url,
       imageUrl: item.imageUrl || item.image || null,
       artist: item.artist,
-      releaseDate: item.releaseDate
+      releaseDate: item.releaseDate || item.releasedDate || null
     }))
 
     return Response.json({ items: normalized, username })

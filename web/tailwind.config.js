@@ -11,7 +11,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif']
+        display: ['Syne', 'sans-serif'],
+        body: ['Outfit', 'sans-serif'],
+        sans: ['Outfit', 'system-ui', 'sans-serif']
       }
     }
   },
