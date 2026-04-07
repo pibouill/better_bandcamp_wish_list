@@ -7,6 +7,7 @@
   let loading = false
   let error = ''
   let showCookieModal = false
+  let needCookie = false
   let savedUsername = ''
   let savedCookie = ''
 
@@ -40,8 +41,10 @@
 
       if (!res.ok) {
         if (data.error === 'private') {
+          needCookie = true
           showCookieModal = true
           error = 'This wishlist is private. Add your cookie to continue.'
+          loading = false
           return
         }
         throw new Error(data.error || data.message || 'Failed to fetch wishlist')
@@ -88,7 +91,7 @@
           />
         </div>
 
-        {#if showCookieModal || cookie}
+        {#if needCookie || cookie}
           <div>
             <label for="cookie" class="block text-sm font-medium text-gray-300 mb-1">
               Identity Cookie
@@ -104,7 +107,7 @@
               id="cookie"
               type="password"
               bind:value={cookie}
-              placeholder="Paste your cookie (only stored locally)"
+              placeholder="Paste your cookie to view private wishlist"
               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             />
           </div>
