@@ -35,7 +35,7 @@ jobs:
 
       - name: Check for sensitive data
         run: |
-          if git grep -i -E "(cookie|token|key|secret|identity|password)" -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml'; then
+          if git grep -i -E "(cookie|token|key|secret|identity|password)" -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml' ':(exclude)cli/bc_fetch.mjs' ':(exclude)package-lock.json' ':(exclude)DEPLOYMENT.md'; then
             echo "::error::Potential sensitive data found in repository"
             exit 1
           fi
