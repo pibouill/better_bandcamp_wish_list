@@ -13,6 +13,8 @@ export default {
       fontFamily: {
         display: ['Syne', 'sans-serif'],
         body: ['Outfit', 'sans-serif'],
+        landing: ['Plus Jakarta Sans', 'sans-serif'],
+        dashboard: ['Inter', 'sans-serif'],
         sans: ['Outfit', 'system-ui', 'sans-serif']
       }
     }

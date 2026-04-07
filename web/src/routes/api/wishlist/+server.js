@@ -1,4 +1,4 @@
-import bcfetch from 'bandcamp-fetch'
+import { BandcampFetch } from 'bandcamp-fetch'
 
 export async function GET({ url }) {
   const username = url.searchParams.get('username')?.trim()
@@ -13,15 +13,19 @@ export async function GET({ url }) {
   }
 
   try {
+    let bcfetchInstance
+    
     if (cookie) {
-      if (cookie.includes('identity=')) {
-        bcfetch.setCookie(cookie)
-      } else {
-        bcfetch.setCookie(`identity=${cookie}; js_logged_in=1`)
+      let cookieValue = cookie
+      if (!cookie.includes('identity=')) {
+        cookieValue = `identity=${cookie}; js_logged_in=1`
       }
+      bcfetchInstance = new BandcampFetch({ cookie: cookieValue })
+    } else {
+      bcfetchInstance = new BandcampFetch()
     }
 
-    const fan = bcfetch.fan
+    const fan = bcfetchInstance.fan
     const allItems = []
     let target = username
     let pages = 0
