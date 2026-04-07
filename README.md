@@ -150,8 +150,6 @@ This tool uses Bandcamp's internal API (via the `bandcamp-fetch` library) to fet
 - You'll see an error message: "This wishlist is private"
 - To view it, you need the owner's Bandcamp cookie
 
-**Recent Change (2024+):** Bandcamp changed their default privacy settings. Many previously private wishlists are now public. This means you can often view wishlists without any authentication that would have required a cookie last year.
-
 ### Update Timing
 
 - **Real-time data:** Each request fetches fresh data from Bandcamp - no caching

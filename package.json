@@ -1,7 +1,7 @@
 {
   "name": "better-bandcamp-wishlist",
   "version": "1.0.0",
-  "description": "Bandcamp wishlist backup tool - CLI + Web Viewer",
+  "description": "Better Bandcamp Wishlist - View and explore any Bandcamp wishlist beautifully",
   "private": true,
   "scripts": {
     "dev:cli": "echo 'Use: cd cli && npm run dev'",
@@ -19,10 +19,10 @@
   ],
   "author": "pibouill",
   "license": "ISC",
-  "bugs": "https://github.com/pibouill/better_bandcamp_wishlist/issues",
-  "homepage": "https://github.com/pibouill/better_bandcamp_wishlist#readme",
+  "bugs": "https://github.com/pibouill/better_bandcamp_wish_list/issues",
+  "homepage": "https://github.com/pibouill/better_bandcamp_wish_list#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pibouill/better_bandcamp_wishlist.git"
+    "url": "git+https://github.com/pibouill/better_bandcamp_wish_list.git"
   }
 }

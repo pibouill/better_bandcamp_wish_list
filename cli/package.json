@@ -1,7 +1,7 @@
 {
   "name": "bc-wishlist-cli",
   "version": "1.0.0",
-  "description": "Bandcamp wishlist CLI backup tool",
+  "description": "Better Bandcamp Wishlist CLI - Backup tool",
   "type": "module",
   "scripts": {
     "backup": "node bc_fetch.mjs",
