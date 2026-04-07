@@ -39,6 +39,9 @@ export async function GET({ url }) {
     }
 
     if (allItems.length === 0) {
+      if (!cookie) {
+        return Response.json({ error: 'private', message: 'This wishlist is private. Add your cookie to continue.' }, { status: 403 })
+      }
       return Response.json({ error: 'Empty wishlist', message: 'No items found. The wishlist may be empty.' }, { status: 404 })
     }
 
