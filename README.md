@@ -1,6 +1,8 @@
-# Bandcamp Wishlist Viewer
+# Better Bandcamp Wishlist
 
-A web app and CLI tool to view, backup, and manage Bandcamp wishlists.
+BC's wishlist search is from my experience kind-of eh
+
+So me (and AI) are trying to offer an improved experience
 
 (big WIP :) )
 
