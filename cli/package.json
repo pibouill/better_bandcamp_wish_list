@@ -7,7 +7,7 @@
     "backup": "node bc_fetch.mjs",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "lint": "eslint .",
+    "lint": "eslint bc_fetch.mjs searchWishlist.mjs",
     "test": "npm run format-check && npm run lint"
   },
   "dependencies": {

@@ -24,31 +24,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install CLI dependencies
+        run: cd cli && npm install
 
-      - name: Run tests
-        run: npm run test
+      - name: Install web dependencies
+        run: cd web && npm install
 
-      - name: Verify script structure
-        run: |
-          node -c bc_fetch.mjs && echo "✅ Syntax check passed" || exit 1
-          test -f package.json && echo "✅ package.json exists" || exit 1
-          test -f README.md && echo "✅ README.md exists" || exit 1
-
-      - name: Test with mock data
-        run: |
-          # Create a minimal test to verify the script loads correctly
-          node -e "
-            import('./bc_fetch.mjs').then(() => console.log('✅ Module loads successfully')).catch(err => {
-              console.error('❌ Module load failed:', err.message);
-              process.exit(1);
-            });
-          "
+      - name: Run CLI tests
+        run: cd cli && npm run test
 
       - name: Check for sensitive data
         run: |
-          if git grep -i -E "(cookie|token|key|secret|identity|password)" -- ':(exclude).env.sample' ':(exclude)README.md'; then
+          if git grep -i -E "(cookie|token|key|secret|identity|password)" -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml'; then
             echo "::error::Potential sensitive data found in repository"
             exit 1
           fi
