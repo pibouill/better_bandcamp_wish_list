@@ -1,0 +1,21 @@
+{
+  "name": "bc-wishlist-cli",
+  "version": "1.0.0",
+  "description": "Bandcamp wishlist CLI backup tool",
+  "type": "module",
+  "scripts": {
+    "backup": "node bc_fetch.mjs",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "npm run format-check && npm run lint"
+  },
+  "dependencies": {
+    "bandcamp-fetch": "^3.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.57.0"
+  }
+}

@@ -1,16 +1,28 @@
 {
-  "name": "bandcamp",
+  "name": "bc-wishlist-backup",
   "version": "1.0.0",
-  "description": "",
-  "main": "bc_fetch.js",
+  "description": "Bandcamp wishlist backup tool - CLI + Web Viewer",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:cli": "echo 'Use: cd cli && npm run dev'",
+    "dev:web": "cd web && npm run dev",
+    "build:web": "cd web && npm run build",
+    "lint": "eslint cli/bc_fetch.mjs cli/searchWishlist.mjs",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
+    "test": "npm run format-check && npm run lint"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "bandcamp",
+    "wishlist",
+    "backup"
+  ],
+  "author": "pibouill",
   "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "bandcamp-fetch": "^3.0.0"
+  "bugs": "https://github.com/pibouill/bc_wishlist_backup/issues",
+  "homepage": "https://github.com/pibouill/bc_wishlist_backup#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pibouill/bc_wishlist_backup.git"
   }
 }
