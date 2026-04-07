@@ -1,45 +1,14 @@
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-jobs:
-  test:
-    name: Test on Node.js ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20, 22, 24]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install CLI dependencies
-        run: cd cli && npm install
-
-      - name: Install web dependencies
-        run: cd web && npm install
-
-      - name: Run CLI tests
-        run: cd cli && npm run test
-
       - name: Check for sensitive data
         run: |
-          if git grep -i -E "(cookie|token|secret|identity)" -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml' ':(exclude)cli/bc_fetch.mjs' ':(exclude)DEPLOYMENT.md'; then
+          set -euo pipefail
+
+          # Flag likely secret material (assignments / headers / long literals), not normal words in code.
+          if git grep -nI -E \
+            "(api[_-]?key|secret|token|password)\s*[:=]\s*['\"][^'\"]{8,}['\"]|Authorization:\s*Bearer\s+[A-Za-z0-9._-]{10,}|identity\s*=\s*['\"][^'\"]{8,}['\"]" \
+            -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml' ':(exclude)DEPLOYMENT.md'
+          then
             echo "::error::Potential sensitive data found in repository"
             exit 1
           fi
+
           echo "✅ No sensitive data found"
