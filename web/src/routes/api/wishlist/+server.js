@@ -14,7 +14,11 @@ export async function GET({ url }) {
 
   try {
     if (cookie) {
-      bcfetch.setCookie(`identity=${cookie}; js_logged_in=1`)
+      if (cookie.includes('identity=')) {
+        bcfetch.setCookie(cookie)
+      } else {
+        bcfetch.setCookie(`identity=${cookie}; js_logged_in=1`)
+      }
     }
 
     const fan = bcfetch.fan
@@ -24,25 +28,36 @@ export async function GET({ url }) {
     const maxPages = 500
 
     while (target && pages++ < maxPages) {
-      const res = await fan.getWishlist({ target })
+      try {
+        const res = await fan.getWishlist({ target })
 
-      if (!res || !res.items || res.items.length === 0) {
-        break
+        if (!res || !res.items || res.items.length === 0) {
+          break
+        }
+
+        allItems.push(...res.items)
+        target = res.continuation || null
+
+        if (!target) break
+
+        await new Promise((r) => setTimeout(r, 150))
+      } catch (pageError) {
+        const pageMsg = pageError.message || ''
+        if (pageMsg.includes('401') || pageMsg.includes('403')) {
+          if (!cookie) {
+            return Response.json({ error: 'private', message: 'This wishlist is private. Add your cookie to continue.' }, { status: 403 })
+          }
+          return Response.json({ error: 'invalid_cookie', message: 'The cookie appears to be invalid. Please get a fresh cookie from Bandcamp.' }, { status: 403 })
+        }
+        throw pageError
       }
-
-      allItems.push(...res.items)
-      target = res.continuation || null
-
-      if (!target) break
-
-      await new Promise((r) => setTimeout(r, 150))
     }
 
     if (allItems.length === 0) {
       if (!cookie) {
         return Response.json({ error: 'private', message: 'This wishlist is private. Add your cookie to continue.' }, { status: 403 })
       }
-      return Response.json({ error: 'Empty wishlist', message: 'No items found. The wishlist may be empty.' }, { status: 404 })
+      return Response.json({ error: 'Empty wishlist', message: 'No items found. The wishlist may be empty or the cookie might be invalid.' }, { status: 404 })
     }
 
     const normalized = allItems.map(item => ({
