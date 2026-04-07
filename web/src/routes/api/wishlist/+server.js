@@ -21,7 +21,7 @@ export async function GET({ url }) {
     const allItems = []
     let target = username
     let pages = 0
-    const maxPages = 100
+    const maxPages = 500
 
     while (target && pages++ < maxPages) {
       const res = await fan.getWishlist({ target })
@@ -35,7 +35,7 @@ export async function GET({ url }) {
 
       if (!target) break
 
-      await new Promise((r) => setTimeout(r, 200))
+      await new Promise((r) => setTimeout(r, 150))
     }
 
     if (allItems.length === 0) {
