@@ -1,68 +1,38 @@
 # Better Bandcamp Wishlist
 
-BC's wishlist search is from my experience kind-of eh
-
-So me (and AI) are trying to offer an improved experience
-
-(big WIP :) )
+A personal wishlist management tool designed to give you better control over your own Bandcamp wishlist - not for viewing other people's wishlists.
 
 ## Features
 
-- View any Bandcamp wishlist (public or private)
-- Web interface for browsing, searching, and filtering
-- CLI tool for local backups
-- Track changes between backups (additions/removals)
-- Export data to both JSON and CSV formats
-- Search your wishlist by record label
-- Schedule automatic daily backups using cron
+- **Enhanced organization** - Filter by label, genre, tags, and price
+- **Multiple sort options** - Sort by release date, date added, artist, or title
+- **View modes** - Toggle between grid and list views
+- **Export data** - Download your wishlist as JSON or CSV
+- **CLI backup tool** - Schedule automatic daily backups using cron
+- **Detailed item data** - See labels, genres, tags, prices, and more
 
-## How Bandcamp Wishlists Work
+## How It Works
 
-### Public vs Private Wishlists
+This tool accesses your own Bandcamp wishlist to help you manage and organize it better. Bandcamp's native wishlist is quite limited - this gives you more powerful filtering, sorting, and export capabilities.
 
-Bandcamp users can set their wishlist visibility:
+### Getting Your Data
 
-| Setting     | Can View?  | How to Access           |
-| ----------- | ---------- | ----------------------- |
-| **Public**  | Anyone     | Just enter the username |
-| **Private** | Owner only | Requires your cookie    |
+**Your wishlist must be public** to use this tool. Bandcamp now defaults to public wishlists, but you can check and change this in your Bandcamp settings if needed.
 
-**Recent Change (2024+):** Bandcamp now shows wishlists as **public by default** for most users. However, some older accounts or users who explicitly set their wishlist to private will still require authentication.
+To access your wishlist:
 
-### How It Works (Technical)
-
-1. **Public wishlists:** The app makes requests to Bandcamp's internal API without any authentication. If the wishlist is public, it returns all items.
-
-2. **Private wishlists:** If the API returns a 401/403 error, the app asks the user to provide their Bandcamp cookie (stored only in their browser - never sent to any server except Bandcamp).
-
-3. **Cookie-based fetching:** With a valid cookie, the app can access private wishlists by passing the `identity` cookie in the request headers.
-
-### Update Frequency
-
-**How long does it take for changes to appear?**
-
-- **Immediately:** Changes to your own wishlist (adding/removing items) appear in real-time when you refresh.
-- **API updates:** The app fetches fresh data each time - there's no cache, so you're always seeing the current state.
-
-**How often can you fetch?**
-
-- Bandcamp has rate limiting. The app includes a 200ms delay between requests to avoid getting blocked.
-- If you get rate-limited (429 error), wait a few minutes before trying again.
-
-### Why Does This Matter?
-
-- **Privacy changes:** If someone's wishlist went from private to public recently, you can now view it without needing their cookie.
-- **Real-time access:** Unlike some services that cache data, this tool fetches live data each time.
+1. Enter your Bandcamp username in the web app
+2. Your wishlist data is fetched directly from Bandcamp (no data is stored by this app)
 
 ## Quick Start (Web App)
 
 ### 1. Visit the Web App
 
-Simply go to the deployed URL (e.g., `your-app.netlify.app`) and enter any Bandcamp username.
+Go to the deployed URL (e.g., `your-app.netlify.app`) and enter your Bandcamp username.
 
-### 2. For Private Wishlists
+### 2. Public or Private
 
-If a wishlist is private, you'll be prompted to add your Bandcamp cookie. See the [Cookie Tutorial](#bandcamp-authentication) below.
+Your wishlist must be **public** for the tool to work. If it's private, you can still use it by adding your own Bandcamp cookie (see below).
 
 ---
 
@@ -134,98 +104,26 @@ cd cli && node searchWishlist.mjs label_name
 
 ## Important Notes
 
-### Bandcamp API & How It Works
+### Data Privacy
 
-This tool uses Bandcamp's internal API (via the `bandcamp-fetch` library) to fetch wishlist data. Here's what you need to know:
+Your wishlist data is fetched directly from Bandcamp each time you use the app - no data is stored by this tool. The web app runs entirely in your browser.
 
-**Public Wishlists:**
+### Public Wishlist Required
 
-- Most Bandcamp wishlists are now **public by default**
-- Just enter the username - no authentication needed
-- Works for accounts that haven't explicitly set their wishlist to private
-
-**Private Wishlists:**
-
-- Some users have explicitly set their wishlist to private
-- You'll see an error message: "This wishlist is private"
-- To view it, you need the owner's Bandcamp cookie
-
-### Update Timing
-
-- **Real-time data:** Each request fetches fresh data from Bandcamp - no caching
-- **Changes appear immediately:** When someone adds/removes items from their wishlist, those changes are visible on the next refresh
-- **No history:** Bandcamp doesn't provide wishlist history - you can only see the current state
+This tool only works with **public** wishlists. If your wishlist is set to private in Bandcamp settings, you won't be able to use this tool. You can change this in your Bandcamp account settings.
 
 ### Rate Limiting
 
 The app includes rate limiting to avoid being blocked:
 
-- **200ms delay** between API requests
-- **Max 100 pages** per fetch (~1000 items)
+- **500ms delay** between API requests
 - If you get a **429 error** (Too Many Requests), wait a few minutes before trying again
-
-### Cookie Expiration
-
-Bandcamp cookies can expire. If you see authentication errors:
-
-1. Log out and log back in to Bandcamp
-2. Get fresh cookies from Developer Tools → Application → Cookies
-3. Update your saved cookie in the web app (stored in localStorage) or `.env` file
-
-4. Log in to Bandcamp in your browser
-5. Open Developer Tools (F12) > Application > Cookies
-6. Copy the values for `identity` and `js_logged_in` cookies
-7. Add them to your `.env` file:
-
-```
-BANDCAMP_IDENTITY_COOKIE=your_identity_cookie_value
-BANDCAMP_JS_LOGGED_IN_COOKIE=1
-## Getting Your Bandcamp Cookie
-
-To access private wishlists (or to use the CLI tool), you need a Bandcamp cookie:
-
-1. Log in to Bandcamp in your browser
-2. Open Developer Tools (F12) → Application tab (Chrome) or Storage tab (Firefox)
-3. Expand "Cookies" → "bandcamp.com"
-4. Copy the value of the `identity` cookie
-
-**For the web app:** Enter the cookie value when prompted. It's stored only in your browser's localStorage - never sent to any server.
-
-**For the CLI:** Add it to your `.env` file:
-
-```
-
-BANDCAMP_IDENTITY_COOKIE=your_identity_cookie_value
-
-```
-
-### Privacy Note
-
-Your cookie is stored **only in your browser** (localStorage) when using the web app. It's never sent to any server - the app uses it directly to fetch data from Bandcamp. For the CLI, the cookie stays on your local machine.
-
-## Recommendations
-
-1. **Keep your `.env` file private** - Never commit it to version control
-2. **Use strong, unique cookies** - Rotate your Bandcamp cookies periodically
-3. **Monitor rate limits** - If you get blocked, reduce the concurrency in `bc_fetch.mjs`
-4. **Set up logging** - The script creates `bc_fetch.log` for troubleshooting
-
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
 
 ## Troubleshooting
 
 **Common issues:**
 
-- **"This wishlist is private"**: Enter the owner's Bandcamp cookie when prompted
-- **"Invalid credentials"**: Your Bandcamp cookies may have expired. Get new ones from your browser.
+- **"This wishlist is private"**: Your Bandcamp wishlist must be set to public. Change it in your Bandcamp account settings.
 - **"Rate limited"**: Wait a few minutes before trying again
 - **"404 Not Found"**: The username might be incorrect or the profile doesn't exist
 - **Web app not loading**: Make sure JavaScript is enabled and try a different browser

@@ -7,22 +7,18 @@
   let loading = false
   let error = ''
   let showCookieModal = false
-  let needCookie = false
   let savedUsername = ''
-  let savedCookie = ''
 
   onMount(() => {
     savedUsername = localStorage.getItem('bc_username') || ''
-    savedCookie = localStorage.getItem('bc_cookie') || ''
     if (savedUsername) {
       username = savedUsername
-      cookie = savedCookie
     }
   })
 
   async function handleSubmit() {
     if (!username.trim()) {
-      error = 'Please enter a username'
+      error = 'Please enter your Bandcamp username'
       return
     }
 
@@ -41,9 +37,7 @@
 
       if (!res.ok) {
         if (data.error === 'private') {
-          needCookie = true
-          showCookieModal = true
-          error = 'This wishlist is private. Add your cookie to continue.'
+          error = 'Your wishlist is set to private. Add your cookie to access it, or make it public in your Bandcamp settings.'
           loading = false
           return
         }
@@ -73,14 +67,14 @@
     <div class="text-center mb-6 sm:mb-8">
       <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🎵</div>
       <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2 font-display">Better Bandcamp Wishlist</h1>
-      <p class="text-gray-400 text-sm sm:text-base font-body">View and explore any Bandcamp wishlist beautifully</p>
+      <p class="text-gray-400 text-sm sm:text-base font-body">Better manage your own Bandcamp wishlist</p>
     </div>
 
     <div class="bg-gray-800 rounded-xl p-5 sm:p-6 shadow-2xl border border-gray-700">
       <form on:submit|preventDefault={handleSubmit} class="space-y-4">
         <div>
           <label for="username" class="block text-sm font-medium text-gray-300 mb-1.5 font-body">
-            Bandcamp Username
+            Your Bandcamp Username
           </label>
           <input
             id="username"
@@ -91,27 +85,25 @@
           />
         </div>
 
-        {#if needCookie || cookie}
-          <div>
-            <label for="cookie" class="block text-sm font-medium text-gray-300 mb-1.5 font-body">
-              Identity Cookie
-              <button
-                type="button"
-                on:click={() => (showCookieModal = true)}
-                class="text-amber-400 hover:text-amber-300 text-xs ml-1 sm:ml-2"
-              >
-                How to get?
-              </button>
-            </label>
-            <input
-              id="cookie"
-              type="password"
-              bind:value={cookie}
-              placeholder="Paste your cookie to view private wishlist"
-              class="w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-body text-sm"
-            />
-          </div>
-        {/if}
+        <div>
+          <label for="cookie" class="block text-sm font-medium text-gray-300 mb-1.5 font-body">
+            Identity Cookie (optional)
+            <button
+              type="button"
+              on:click={() => (showCookieModal = true)}
+              class="text-amber-400 hover:text-amber-300 text-xs ml-1 sm:ml-2"
+            >
+              Only needed if your wishlist is private
+            </button>
+          </label>
+          <input
+            id="cookie"
+            type="password"
+            bind:value={cookie}
+            placeholder="Leave empty if your wishlist is public"
+            class="w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-body text-sm"
+          />
+        </div>
 
         {#if error}
           <div class="bg-red-900/50 border border-red-700 text-red-200 px-3 py-2.5 rounded-lg text-sm font-body">
@@ -135,16 +127,6 @@
           {/if}
         </button>
       </form>
-
-      <div class="mt-6 pt-6 border-t border-gray-700">
-        <button
-          type="button"
-          on:click={() => (showCookieModal = true)}
-          class="w-full text-center text-gray-400 hover:text-gray-300 text-sm"
-        >
-          How do I view a private wishlist?
-        </button>
-      </div>
     </div>
 
     <p class="text-center text-gray-500 text-[10px] sm:text-xs mt-5 sm:mt-6 font-body">
@@ -170,28 +152,27 @@
     class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" 
     role="dialog" 
     aria-modal="true"
-    aria-labelledby="cookie-modal-title"
     on:click|self={() => (showCookieModal = false)}
     on:keydown={(e) => e.key === 'Escape' && (showCookieModal = false)}
   >
     <div class="bg-gray-800 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-700">
       <div class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-white">How to view a private wishlist</h2>
+          <h2 class="text-xl font-bold text-white">How to get your cookie</h2>
           <button on:click={() => (showCookieModal = false)} class="text-gray-400 hover:text-white text-2xl">
             &times;
           </button>
         </div>
 
         <div class="text-gray-300 space-y-4">
-          <p class="text-gray-400">Bandcamp requires a "cookie" to view private wishlists. Here's how to get it:</p>
+          <p class="text-gray-400">If your wishlist is private, you can use your own Bandcamp cookie to access it. Here's how to get it:</p>
 
           <div class="bg-gray-900 rounded-lg p-4 space-y-4">
             <div class="flex items-start gap-3">
               <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">1</span>
               <div>
                 <p class="font-medium text-white">Open Bandcamp and log in</p>
-                <a href="https://bandcamp.com" target="_blank" class="text-amber-400 hover:underline text-sm">Click here to open Bandcamp →</a>
+                <a href="https://bandcamp.com" target="_blank" class="text-amber-400 hover:underline text-sm">bandcamp.com →</a>
               </div>
             </div>
             
@@ -199,7 +180,7 @@
               <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">2</span>
               <div>
                 <p class="font-medium text-white">Open Developer Tools</p>
-                <p class="text-gray-400 text-sm">Press the <kbd class="bg-gray-700 px-2 py-1 rounded text-white text-xs">F12</kbd> key (or right-click → Inspect)</p>
+                <p class="text-gray-400 text-sm">Press <kbd class="bg-gray-700 px-2 py-1 rounded text-white text-xs">F12</kbd> or right-click → Inspect</p>
               </div>
             </div>
             
@@ -207,7 +188,7 @@
               <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">3</span>
               <div>
                 <p class="font-medium text-white">Find the cookie</p>
-                <p class="text-gray-400 text-sm">Click the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox), then expand <strong>Cookies</strong> → <strong>bandcamp.com</strong></p>
+                <p class="text-gray-400 text-sm"><strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox) → Cookies → bandcamp.com</p>
               </div>
             </div>
             
@@ -215,20 +196,20 @@
               <span class="bg-amber-500 text-gray-900 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold shrink-0">4</span>
               <div>
                 <p class="font-medium text-white">Copy the identity cookie</p>
-                <p class="text-gray-400 text-sm">Find the row with name <code class="bg-gray-700 px-1 rounded text-white">identity</code> and double-click the Value column to copy it</p>
+                <p class="text-gray-400 text-sm">Find <code class="bg-gray-700 px-1 rounded text-white">identity</code> and copy its value</p>
               </div>
             </div>
           </div>
 
           <div class="bg-amber-900/30 border border-amber-700 rounded-lg p-3">
-            <p class="text-amber-200 text-sm">🔒 Your cookie is stored only in your browser - we never see it!</p>
+            <p class="text-amber-200 text-sm">Your cookie is stored only in your browser - never sent to any server.</p>
           </div>
 
           <button
             on:click={() => (showCookieModal = false)}
             class="w-full bg-amber-500 hover:bg-amber-400 text-gray-900 font-semibold py-3 px-4 rounded-lg"
           >
-            I got it - let's go!
+            Got it
           </button>
         </div>
       </div>
