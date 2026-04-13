@@ -97,7 +97,7 @@ async function backup() {
 
       if (!target) break
 
-      await new Promise((r) => setTimeout(r, 150))
+      await new Promise((r) => setTimeout(r, 500))
     } catch (e) {
       fetchError = e
       if (e.message?.includes('429') || e.status === 429) {

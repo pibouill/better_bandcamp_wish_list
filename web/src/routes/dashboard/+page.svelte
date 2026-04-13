@@ -12,6 +12,15 @@
   let filterType = 'all'
   let sortBy = 'date'
   let sortOrder = 'desc'
+  let labelFilter = ''
+  let genreFilter = ''
+  let tagFilter = ''
+  let addedDateSort = 'newest'
+  let priceMin = ''
+  let priceMax = ''
+  let searchInTags = false
+  let viewMode = 'grid'
+  let showStats = false
 
   $: username = $page.url.searchParams.get('username') || ''
 
@@ -69,18 +78,35 @@
         const itemYear = item.releaseDate ? new Date(item.releaseDate).getFullYear() : null
         if (!itemYear || itemYear.toString() !== releaseDateFilter) return false
       }
+
+      if (labelFilter && item.label !== labelFilter) return false
+
+      if (genreFilter && item.genre !== genreFilter) return false
+
+      if (tagFilter) {
+        const itemTags = item.tags || []
+        if (!itemTags.some(t => t.toLowerCase().includes(tagFilter.toLowerCase()))) return false
+      }
+
+      if (priceMin || priceMax) {
+        const price = parseFloat(item.price || item.minimumPrice || 0)
+        if (priceMin && price < parseFloat(priceMin)) return false
+        if (priceMax && price > parseFloat(priceMax)) return false
+      }
       
       if (searchQuery) {
         const query = normalizeForSearch(searchQuery)
         const title = normalizeForSearch(item.title || item.name || '')
         const artistName = normalizeForSearch(item.artist?.name || '')
         const artistUrl = normalizeForSearch(item.artist?.url || '')
-        const label = normalizeForSearch(getLabelFromUrl(item.url))
+        const label = normalizeForSearch(item.label || getLabelFromUrl(item.url))
+        const tags = searchInTags ? (item.tags || []).map(t => normalizeForSearch(t)).join(' ') : ''
         
         return title.includes(query) || 
                artistName.includes(query) || 
                artistUrl.includes(query) ||
-               label.includes(query)
+               label.includes(query) ||
+               (searchInTags && tags.includes(query))
       }
       return true
     })
@@ -95,6 +121,13 @@
         const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : -1
         const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : -1
         comparison = dateA - dateB
+      } else if (sortBy === 'added') {
+        if (addedDateSort === 'newest') {
+          comparison = b.wishlistIndex - a.wishlistIndex
+        } else {
+          comparison = a.wishlistIndex - b.wishlistIndex
+        }
+        return comparison
       }
       
       return sortOrder === 'asc' ? comparison : -comparison
@@ -102,10 +135,27 @@
 
   $: sortLabel = sortBy === 'date' 
     ? (sortOrder === 'asc' ? 'Oldest' : 'Newest')
+    : sortBy === 'added'
+    ? (addedDateSort === 'newest' ? 'Newest first' : 'Oldest first')
     : (sortOrder === 'asc' ? 'A → Z' : 'Z → A')
 
   function toggleSortOrder() {
     sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
+  }
+
+  function clearFilters() {
+    searchQuery = ''
+    filterType = 'all'
+    releaseDateFilter = ''
+    labelFilter = ''
+    genreFilter = ''
+    tagFilter = ''
+    priceMin = ''
+    priceMax = ''
+    sortBy = 'date'
+    sortOrder = 'desc'
+    addedDateSort = 'newest'
+    searchInTags = false
   }
 
   function downloadJSON() {
@@ -120,11 +170,16 @@
   }
 
   function downloadCSV() {
-    const headers = ['type', 'artist', 'title', 'url', 'image_url']
+    const headers = ['type', 'artist', 'title', 'label', 'genre', 'release_date', 'price', 'currency', 'url', 'image_url']
     const rows = filteredItems.map((item) => [
       item.type || 'unknown',
       item.artist?.name || '',
       item.title || item.name || '',
+      item.label || getLabelFromUrl(item.url),
+      item.genre || '',
+      item.releaseDate || '',
+      item.price || '',
+      item.currency || '',
       item.url || '',
       item.imageUrl || ''
     ])
@@ -157,6 +212,35 @@
       .map(item => new Date(item.releaseDate).getFullYear())
       .filter(year => year > 0)
   )].sort((a, b) => b - a)
+
+  $: availableLabels = [...new Set(
+    items
+      .filter(item => item.label)
+      .map(item => item.label)
+  )].sort()
+
+  $: availableGenres = [...new Set(
+    items
+      .filter(item => item.genre)
+      .map(item => item.genre)
+  )].sort()
+
+  $: availableTags = [...new Set(
+    items
+      .flatMap(item => item.tags || [])
+  )].sort()
+
+  $: allTagCounts = (() => {
+    const counts = {}
+    items.forEach(item => {
+      (item.tags || []).forEach(tag => {
+        counts[tag] = (counts[tag] || 0) + 1
+      })
+    })
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 30)
+  })()
 </script>
 
 <svelte:head>
@@ -218,9 +302,15 @@
         <input
           type="text"
           bind:value={searchQuery}
-          placeholder="Search by artist, title, label..."
+          placeholder="Search by artist, title, label, tag..."
           class="w-full px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm"
         />
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" bind:checked={searchInTags} class="rounded text-amber-500 focus:ring-amber-500" />
+            <span class="font-body">Search in tags</span>
+          </label>
+        </div>
         <div class="flex flex-wrap gap-2 items-center">
           <select
             bind:value={filterType}
@@ -240,6 +330,39 @@
               <option value={year.toString()}>{year}</option>
             {/each}
           </select>
+          {#if availableLabels.length > 0}
+            <select
+              bind:value={labelFilter}
+              class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
+            >
+              <option value="">All Labels</option>
+              {#each availableLabels as label}
+                <option value={label}>{label}</option>
+              {/each}
+            </select>
+          {/if}
+          {#if availableGenres.length > 0}
+            <select
+              bind:value={genreFilter}
+              class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
+            >
+              <option value="">All Genres</option>
+              {#each availableGenres as genre}
+                <option value={genre}>{genre}</option>
+              {/each}
+            </select>
+          {/if}
+          {#if allTagCounts.length > 0}
+            <select
+              bind:value={tagFilter}
+              class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
+            >
+              <option value="">All Tags ({allTagCounts.length})</option>
+              {#each allTagCounts as [tag, count]}
+                <option value={tag}>{tag} ({count})</option>
+              {/each}
+            </select>
+          {/if}
           <select
             bind:value={sortBy}
             class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
@@ -247,15 +370,55 @@
             <option value="date">Release Date</option>
             <option value="artist">Artist</option>
             <option value="title">Title</option>
+            <option value="added">Date Added</option>
           </select>
-          <button
-            on:click={toggleSortOrder}
-            class="px-3 py-2 border rounded-lg hover:bg-gray-50 font-body text-sm bg-white flex items-center gap-1"
-            title={sortBy === 'date' ? (sortOrder === 'asc' ? 'Oldest first' : 'Newest first') : (sortOrder === 'asc' ? 'A to Z' : 'Z to A')}
+          <select
+            bind:value={addedDateSort}
+            class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
           >
-            <span class="text-xs">{sortLabel}</span>
+            <option value="newest">Newest Added</option>
+            <option value="oldest">Oldest Added</option>
+          </select>
+          {#if items.some(i => i.price || i.minimumPrice)}
+            <input
+              type="number"
+              bind:value={priceMin}
+              placeholder="Min $"
+              min="0"
+              step="0.01"
+              class="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm w-20"
+            />
+            <input
+              type="number"
+              bind:value={priceMax}
+              placeholder="Max $"
+              min="0"
+              step="0.01"
+              class="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm w-20"
+            />
+          {/if}
+          <button
+            on:click={clearFilters}
+            class="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 font-body text-sm"
+            title="Clear all filters"
+          >
+            Clear
           </button>
           <div class="flex gap-2 ml-auto">
+            <button
+              on:click={() => viewMode = 'grid'}
+              class="px-3 py-2 border rounded-lg font-body text-sm {viewMode === 'grid' ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}"
+              title="Grid view"
+            >
+              ▦
+            </button>
+            <button
+              on:click={() => viewMode = 'list'}
+              class="px-3 py-2 border rounded-lg font-body text-sm {viewMode === 'list' ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}"
+              title="List view"
+            >
+              ☰
+            </button>
             <button on:click={downloadJSON} class="px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 text-xs sm:text-sm font-body whitespace-nowrap" title="Download as JSON">
               ↓ JSON
             </button>
@@ -268,6 +431,41 @@
 
       {#if filteredItems.length === 0}
         <div class="text-center py-12 text-gray-500 font-body">No items match your search</div>
+      {:else if viewMode === 'list'}
+        <div class="space-y-2">
+          {#each filteredItems as item}
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition-all p-2"
+            >
+              <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
+                {#if item.imageUrl}
+                  <img src={item.imageUrl} alt={item.title || item.name} class="w-full h-full object-cover" loading="lazy" />
+                {:else}
+                  <div class="w-full h-full flex items-center justify-center text-lg">🎵</div>
+                {/if}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm sm:text-base font-medium text-gray-900 font-display truncate">{item.title || item.name}</p>
+                <p class="text-xs sm:text-sm text-gray-500 font-body truncate">{item.artist?.name || 'Unknown'}</p>
+                <div class="flex flex-wrap gap-1 mt-0.5">
+                  {#if item.label}
+                    <span class="text-[10px] text-amber-600 font-body">{item.label}</span>
+                  {/if}
+                  {#if item.genre}
+                    <span class="text-[10px] text-blue-600 font-body">{item.genre}</span>
+                  {/if}
+                  {#if item.price}
+                    <span class="text-[10px] text-green-600 font-body">{item.price} {item.currency}</span>
+                  {/if}
+                </div>
+              </div>
+              <div class="text-xs text-gray-400 font-body flex-shrink-0">#{item.wishlistIndex + 1}</div>
+            </a>
+          {/each}
+        </div>
       {:else}
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5 sm:gap-2">
           {#each filteredItems as item}
@@ -288,7 +486,23 @@
               <div class="p-1.5 sm:p-2">
                 <p class="text-[11px] sm:text-sm font-medium text-gray-900 font-display truncate">{item.title || item.name}</p>
                 <p class="text-[10px] sm:text-xs text-gray-500 font-body truncate">{item.artist?.name || 'Unknown'}</p>
-                <p class="text-[9px] sm:text-xs text-amber-600 font-body truncate">{getLabelFromUrl(item.url)}</p>
+                <div class="flex flex-wrap gap-0.5 mt-0.5">
+                  {#if item.label}
+                    <p class="text-[9px] sm:text-xs text-amber-600 font-body truncate">{item.label}</p>
+                  {:else}
+                    <p class="text-[9px] sm:text-xs text-amber-600 font-body truncate">{getLabelFromUrl(item.url)}</p>
+                  {/if}
+                </div>
+                {#if item.genre || item.price}
+                  <div class="flex flex-wrap gap-0.5 mt-0.5">
+                    {#if item.genre}
+                      <span class="text-[9px] sm:text-xs text-blue-600 font-body">{item.genre}</span>
+                    {/if}
+                    {#if item.price}
+                      <span class="text-[9px] sm:text-xs text-green-600 font-body">{item.price} {item.currency}</span>
+                    {/if}
+                  </div>
+                {/if}
               </div>
             </a>
           {/each}

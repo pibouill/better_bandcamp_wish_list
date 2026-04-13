@@ -44,7 +44,7 @@ export async function GET({ url }) {
 
         if (!target) break
 
-        await new Promise((r) => setTimeout(r, 150))
+        await new Promise((r) => setTimeout(r, 500))
       } catch (pageError) {
         const pageMsg = pageError.message || ''
         if (pageMsg.includes('401') || pageMsg.includes('403')) {
@@ -64,7 +64,7 @@ export async function GET({ url }) {
       return Response.json({ error: 'Empty wishlist', message: 'No items found. The wishlist may be empty or the cookie might be invalid.' }, { status: 404 })
     }
 
-    const normalized = allItems.map(item => ({
+    const normalized = allItems.map((item, index) => ({
       type: item.type,
       id: item.id,
       name: item.name || item.title,
@@ -72,7 +72,17 @@ export async function GET({ url }) {
       url: item.url,
       imageUrl: item.imageUrl || item.image || null,
       artist: item.artist,
-      releaseDate: item.releaseDate || item.releasedDate || null
+      releaseDate: item.releaseDate || item.releasedDate || null,
+      label: item.label?.name || null,
+      labelUrl: item.label?.url || null,
+      genre: item.genre || null,
+      tags: item.tags || [],
+      price: item.price || null,
+      minimumPrice: item.minimumPrice || null,
+      currency: item.currency || null,
+      trackCount: item.trackCount || null,
+      itemType: item.itemType || null,
+      wishlistIndex: index
     }))
 
     return Response.json({ items: normalized, username })
