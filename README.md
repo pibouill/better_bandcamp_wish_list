@@ -1,6 +1,8 @@
 # Better Bandcamp Wishlist
 
-A personal wishlist management tool designed to give you better control over your own Bandcamp wishlist - not for viewing other people's wishlists.
+From my experience, BC's wishlist is kinda eh 
+
+So me (and AI) are trying to make the experience a little better
 
 ## Features
 
