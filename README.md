@@ -1,15 +1,3 @@
-<!-- *********************************************************************** -->
-<!--                                                                         -->
-<!--                                                      :::      ::::::::  -->
-<!-- README.md                                          :+:      :+:    (:+      -->
-<!--                                                  +:+      +:  ++:+    -->
-<!-- By: pibouill <pibouill@student.42prague.com>   #+      +:+#  :+     -->
-<!--                                              #+#+#++#++#+#++#++#++    -->
-<!-- Created: 2026/04/16 10:39:42 by pibouill          #+#    #+#            -->
-<!-- Updated: 2026/04/16 10:39:42 by pibouill         ###   ########.fr      -->
-<!--                                                                         -->
-<!-- *********************************************************************** -->
-
 # Better Bandcamp Wishlist
 
 ## ⚠️⚠️⚠️ BIIIG ->**WIP**<- ⚠️⚠️⚠️
@@ -170,8 +158,4 @@ The app includes rate limiting to avoid being blocked:
 
 ## License
 
-ISC
-
-```
-
-```
+[ISC](https://choosealicense.com/licenses/isc)
