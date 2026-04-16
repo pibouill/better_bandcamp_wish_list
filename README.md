@@ -22,12 +22,12 @@ This tool accesses your own Bandcamp wishlist to help you manage and navigate it
 
 ### Getting Your Data
 
-**Your wishlist must be public** to use this tool. Bandcamp now defaults to public wishlists, but you can check and change this in your Bandcamp settings if needed.
-
 To access your wishlist:
 
 1. Enter your Bandcamp username in the web app
 2. Your wishlist data is fetched directly from Bandcamp (no data is stored by this app)
+
+If you have your wishlist as private: check below.
 
 ## Quick Start (Web App)
 
