@@ -3,10 +3,9 @@
 ## ⚠️⚠️⚠️ BIIIG ->**WIP**<- ⚠️⚠️⚠️
 
 From my experience, BC's wishlist is kinda eh
+So me (and AI) are trying to make the experience a little better
 
 **Note: Filtering is broken for now** - trying to fix. Bandcamp's API returns limited data (no release dates, no genres for most items).
-
-So me (and AI) are trying to make the experience a little better
 
 ## Features
 
