@@ -138,7 +138,7 @@ Your wishlist data is fetched directly from Bandcamp each time you use the app -
 
 ### Private Wishlists
 
-If your wishlist is private, you can still access it by adding your Bandcamp cookie. See the [Accessing Private Wishlists](#2-accessing-private-wishlists) section above for details.
+If your wishlist is private, you can still access it by adding your Bandcamp cookie. See the [Accessing Private Wishlists](#3-accessing-private-wishlists) section above for details.
 
 ### Rate Limiting
 
@@ -151,7 +151,7 @@ The app includes rate limiting to avoid being blocked:
 
 **Common issues:**
 
-- **"This wishlist is private"**: Add your Bandcamp cookie. See "Accessing Private Wishlists" above.
+- **"This wishlist is private"**: Add your Bandcamp cookie. See [Accessing Private Wishlists](#3-accessing-private-wishlists) above.
 - **"Rate limited"**: Wait a few minutes before trying again
 - **"404 Not Found"**: The username might be incorrect or the profile doesn't exist
 - **Web app not loading**: Make sure JavaScript is enabled and try a different browser
