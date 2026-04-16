@@ -50,7 +50,7 @@ If your wishlist is set to private, you can still use the tool by adding your Ba
 
 **How to get your cookie:**
 
-1. Log into Bandcamp in your browser
+1. Log into Bandcamp (https://bandcamp.com) in your browser
 2. Open Developer Tools (F12) → Application tab (Chrome) or Storage tab (Firefox)
 3. Go to Cookies → bandcamp.com
 4. Copy the value of the `identity` cookie
