@@ -14,7 +14,13 @@ export default {
         display: ['Syne', 'sans-serif'],
         body: ['Outfit', 'sans-serif'],
         landing: ['Plus Jakarta Sans', 'sans-serif'],
-        dashboard: ['-apple-system', 'BlinkMacSystemFont', 'San Francisco', 'SF Pro Text', 'sans-serif'],
+        dashboard: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'San Francisco',
+          'SF Pro Text',
+          'sans-serif'
+        ],
         sans: ['Outfit', 'system-ui', 'sans-serif']
       }
     }

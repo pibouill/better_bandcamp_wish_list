@@ -1,8 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format check
+        run: npm run format-check
+
+      - name: Lint
+        run: npm run lint
+
       - name: Check for sensitive data
         run: |
           set -euo pipefail
 
-          # Flag likely secret material (assignments / headers / long literals), not normal words in code.
           if git grep -nI -E \
             "(api[_-]?key|secret|token|password)\s*[:=]\s*['\"][^'\"]{8,}['\"]|Authorization:\s*Bearer\s+[A-Za-z0-9._-]{10,}|identity\s*=\s*['\"][^'\"]{8,}['\"]" \
             -- ':(exclude).env.sample' ':(exclude)README.md' ':(exclude).github/workflows/ci.yml' ':(exclude)DEPLOYMENT.md'
@@ -11,4 +39,4 @@
             exit 1
           fi
 
-          echo "✅ No sensitive data found"
+          echo "No sensitive data found"

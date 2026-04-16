@@ -1,15 +1,3 @@
-// ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   bc_fetch.js                                        :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: pibouill <pibouill@student.42prague.com>   +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2026/01/09 19:07:25 by pibouill          #+#    #+#             //
-//   Updated: 2026/01/09 19:07:27 by pibouill         ###   ########.fr       //
-//                                                                            //
-// ************************************************************************** //
-
 import bcfetch from 'bandcamp-fetch'
 import { writeFileSync, existsSync, readFileSync, renameSync, unlinkSync } from 'fs'
 import { config } from 'dotenv'

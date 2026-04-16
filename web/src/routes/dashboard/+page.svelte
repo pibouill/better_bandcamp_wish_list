@@ -7,6 +7,8 @@
   let items = []
   let loading = true
   let error = ''
+  let enhancing = false
+  let enhancementProgress = ''
   let searchQuery = ''
   let releaseDateFilter = ''
   let filterType = 'all'
@@ -35,11 +37,13 @@
   async function fetchWishlist() {
     loading = true
     error = ''
+    enhancementProgress = ''
 
     const cookie = localStorage.getItem('bc_cookie')
     try {
       const params = new URLSearchParams({ username })
       if (cookie) params.append('cookie', cookie)
+      if (localStorage.getItem('bc_enhance') === 'true') params.append('enhance', 'true')
 
       const res = await fetch(`/api/wishlist?${params}`)
       const data = await res.json()
@@ -56,11 +60,40 @@
     }
   }
 
+  async function reenhance() {
+    if (!items.length || enhancing) return
+    
+    enhancing = true
+    enhancementProgress = 'Enhancing...'
+    
+    const cookie = localStorage.getItem('bc_cookie')
+    try {
+      const params = new URLSearchParams({ username, enhance: 'true' })
+      if (cookie) params.append('cookie', cookie)
+
+      const res = await fetch(`/api/wishlist?${params}`)
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || data.error)
+      }
+
+      items = data.items || []
+    } catch (e) {
+      error = e.message
+    } finally {
+      enhancing = false
+      enhancementProgress = ''
+    }
+  }
+
   function normalizeForSearch(str) {
+    if (!str) return ''
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
   }
 
   function getLabelFromUrl(url) {
+    if (!url) return ''
     try {
       const hostname = new URL(url).hostname
       const match = hostname.match(/^(.*?)\.bandcamp\.com$/)
@@ -85,7 +118,7 @@
 
       if (tagFilter) {
         const itemTags = item.tags || []
-        if (!itemTags.some(t => t.toLowerCase().includes(tagFilter.toLowerCase()))) return false
+        if (!itemTags.some(t => t && t.toLowerCase().includes(tagFilter.toLowerCase()))) return false
       }
 
       if (priceMin || priceMax) {
@@ -98,19 +131,25 @@
         const query = normalizeForSearch(searchQuery)
         const title = normalizeForSearch(item.title || item.name || '')
         const artistName = normalizeForSearch(item.artist?.name || '')
-        const artistUrl = normalizeForSearch(item.artist?.url || '')
         const label = normalizeForSearch(item.label || getLabelFromUrl(item.url))
         const tags = searchInTags ? (item.tags || []).map(t => normalizeForSearch(t)).join(' ') : ''
         
         return title.includes(query) || 
-               artistName.includes(query) || 
-               artistUrl.includes(query) ||
+               artistName.includes(query) ||
                label.includes(query) ||
                (searchInTags && tags.includes(query))
       }
       return true
     })
     .sort((a, b) => {
+      if (sortBy === 'added') {
+        if (addedDateSort === 'newest') {
+          return (b.wishlistIndex || 0) - (a.wishlistIndex || 0)
+        } else {
+          return (a.wishlistIndex || 0) - (b.wishlistIndex || 0)
+        }
+      }
+      
       let comparison = 0
       
       if (sortBy === 'artist') {
@@ -121,22 +160,15 @@
         const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : -1
         const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : -1
         comparison = dateA - dateB
-      } else if (sortBy === 'added') {
-        if (addedDateSort === 'newest') {
-          comparison = b.wishlistIndex - a.wishlistIndex
-        } else {
-          comparison = a.wishlistIndex - b.wishlistIndex
-        }
-        return comparison
       }
       
       return sortOrder === 'asc' ? comparison : -comparison
     })
 
-  $: sortLabel = sortBy === 'date' 
-    ? (sortOrder === 'asc' ? 'Oldest' : 'Newest')
-    : sortBy === 'added'
+  $: sortLabel = sortBy === 'added'
     ? (addedDateSort === 'newest' ? 'Newest first' : 'Oldest first')
+    : sortBy === 'date'
+    ? (sortOrder === 'asc' ? 'Oldest' : 'Newest')
     : (sortOrder === 'asc' ? 'A → Z' : 'Z → A')
 
   function toggleSortOrder() {
@@ -152,9 +184,9 @@
     tagFilter = ''
     priceMin = ''
     priceMax = ''
-    sortBy = 'date'
-    sortOrder = 'desc'
+    sortBy = 'added'
     addedDateSort = 'newest'
+    sortOrder = 'desc'
     searchInTags = false
   }
 
@@ -254,12 +286,25 @@
         <a href="/" class="text-xl sm:text-2xl">🎵</a>
         <div>
           <h1 class="text-base sm:text-xl font-bold text-gray-900 font-display truncate max-w-[150px] sm:max-w-none">{username}'s Wishlist</h1>
-          <p class="text-xs sm:text-sm text-gray-500">{items.length} items</p>
+          <p class="text-xs sm:text-sm text-gray-500">
+            {items.length} items{#if enhancementProgress} • {enhancementProgress}{/if}
+          </p>
         </div>
       </div>
-      <button on:click={logout} class="text-xs sm:text-sm text-gray-500 hover:text-gray-700 px-3 py-2">
-        Logout
-      </button>
+      <div class="flex items-center gap-2">
+        {#if localStorage.getItem('bc_cookie') && !enhancing}
+          <button
+            on:click={reenhance}
+            class="text-xs sm:text-sm text-amber-600 hover:text-amber-700 px-3 py-2"
+            title="Fetch more details (slower but more data)"
+          >
+            ✨ Enhance
+          </button>
+        {/if}
+        <button on:click={logout} class="text-xs sm:text-sm text-gray-500 hover:text-gray-700 px-3 py-2">
+          Logout
+        </button>
+      </div>
     </div>
   </header>
 
@@ -321,15 +366,17 @@
             <option value="track">Tracks</option>
             <option value="merch">Merch</option>
           </select>
-          <select
-            bind:value={releaseDateFilter}
-            class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
-          >
-            <option value="">All Years</option>
-            {#each availableYears as year}
-              <option value={year.toString()}>{year}</option>
-            {/each}
-          </select>
+          {#if availableYears.length > 0}
+            <select
+              bind:value={releaseDateFilter}
+              class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
+            >
+              <option value="">All Years</option>
+              {#each availableYears as year}
+                <option value={year.toString()}>{year}</option>
+              {/each}
+            </select>
+          {/if}
           {#if availableLabels.length > 0}
             <select
               bind:value={labelFilter}
@@ -367,18 +414,28 @@
             bind:value={sortBy}
             class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
           >
+            <option value="added">Date Added</option>
             <option value="date">Release Date</option>
             <option value="artist">Artist</option>
             <option value="title">Title</option>
-            <option value="added">Date Added</option>
           </select>
-          <select
-            bind:value={addedDateSort}
-            class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
-          >
-            <option value="newest">Newest Added</option>
-            <option value="oldest">Oldest Added</option>
-          </select>
+          {#if sortBy === 'added'}
+            <select
+              bind:value={addedDateSort}
+              class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-body text-sm bg-white"
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          {:else if sortBy !== 'added'}
+            <button
+              on:click={toggleSortOrder}
+              class="px-3 py-2 border rounded-lg font-body text-sm bg-white hover:bg-gray-50"
+              title={sortOrder === 'asc' ? 'Sort Z → A' : 'Sort A → Z'}
+            >
+              {sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
+            </button>
+          {/if}
           {#if items.some(i => i.price || i.minimumPrice)}
             <input
               type="number"

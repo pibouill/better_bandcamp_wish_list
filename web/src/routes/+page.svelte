@@ -4,6 +4,7 @@
 
   let username = ''
   let cookie = ''
+  let enableEnhance = false
   let loading = false
   let error = ''
   let showCookieModal = false
@@ -30,6 +31,9 @@
       if (cookie.trim()) {
         params.append('cookie', cookie.trim())
       }
+      if (enableEnhance && cookie.trim()) {
+        params.append('enhance', 'true')
+      }
 
       const res = await fetch(`/api/wishlist?${params}`)
 
@@ -45,9 +49,8 @@
       }
 
       localStorage.setItem('bc_username', username.trim())
-      if (cookie.trim()) {
-        localStorage.setItem('bc_cookie', cookie.trim())
-      }
+      localStorage.setItem('bc_cookie', cookie.trim() || '')
+      localStorage.setItem('bc_enhance', enableEnhance && cookie.trim() ? 'true' : '')
 
       goto(`/dashboard?username=${encodeURIComponent(username.trim())}`)
     } catch (e) {
@@ -103,6 +106,10 @@
             placeholder="Leave empty if your wishlist is public"
             class="w-full px-3 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent font-body text-sm"
           />
+          <label class="flex items-center gap-2 mt-2 cursor-pointer">
+            <input type="checkbox" bind:checked={enableEnhance} class="rounded text-amber-500 focus:ring-amber-500" />
+            <span class="text-xs text-gray-400 font-body">✨ Enhance (more data, requires cookie)</span>
+          </label>
         </div>
 
         {#if error}
@@ -152,6 +159,7 @@
     class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" 
     role="dialog" 
     aria-modal="true"
+    tabindex="-1"
     on:click|self={() => (showCookieModal = false)}
     on:keydown={(e) => e.key === 'Escape' && (showCookieModal = false)}
   >

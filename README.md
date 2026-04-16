@@ -1,6 +1,22 @@
+<!-- *********************************************************************** -->
+<!--                                                                         -->
+<!--                                                      :::      ::::::::  -->
+<!-- README.md                                          :+:      :+:    (:+      -->
+<!--                                                  +:+      +:  ++:+    -->
+<!-- By: pibouill <pibouill@student.42prague.com>   #+      +:+#  :+     -->
+<!--                                              #+#+#++#++#+#++#++#++    -->
+<!-- Created: 2026/04/16 10:39:42 by pibouill          #+#    #+#            -->
+<!-- Updated: 2026/04/16 10:39:42 by pibouill         ###   ########.fr      -->
+<!--                                                                         -->
+<!-- *********************************************************************** -->
+
 # Better Bandcamp Wishlist
 
-From my experience, BC's wishlist is kinda eh 
+## ⚠️⚠️⚠️ BIIIG ->**WIP**<- ⚠️⚠️⚠️
+
+From my experience, BC's wishlist is kinda eh
+
+**Note: Filtering is broken for now** - trying to fix. Bandcamp's API returns limited data (no release dates, no genres for most items).
 
 So me (and AI) are trying to make the experience a little better
 
@@ -15,7 +31,7 @@ So me (and AI) are trying to make the experience a little better
 
 ## How It Works
 
-This tool accesses your own Bandcamp wishlist to help you manage and organize it better. Bandcamp's native wishlist is quite limited - this gives you more powerful filtering, sorting, and export capabilities.
+This tool accesses your own Bandcamp wishlist to help you manage and navigate it better. Bandcamp's native wishlist is quite limited - this gives you more powerful filtering, sorting, and export capabilities.
 
 ### Getting Your Data
 
@@ -28,13 +44,35 @@ To access your wishlist:
 
 ## Quick Start (Web App)
 
-### 1. Visit the Web App
+### 1. Run Locally
+
+```bash
+cd web
+npm run dev
+```
+
+Then open http://localhost:5173 in your browser.
+
+### 2. Or Visit the Deployed App
 
 Go to the deployed URL (e.g., `your-app.netlify.app`) and enter your Bandcamp username.
 
-### 2. Public or Private
+### 3. Accessing Private Wishlists
 
-Your wishlist must be **public** for the tool to work. If it's private, you can still use it by adding your own Bandcamp cookie (see below).
+If your wishlist is set to private, you can still use the tool by adding your Bandcamp cookie. This tricks Bandcamp into thinking you're logged in, letting you access your own private wishlist.
+
+**How to get your cookie:**
+
+1. Log into Bandcamp in your browser
+2. Open Developer Tools (F12) → Application tab (Chrome) or Storage tab (Firefox)
+3. Go to Cookies → bandcamp.com
+4. Copy the value of the `identity` cookie
+
+**In the web app:** Paste the cookie value in the "Identity Cookie (optional)" field.
+
+**In the CLI:** Add it to your `.env` file as `BANDCAMP_IDENTITY_COOKIE=your_cookie_value`.
+
+Your cookie is stored only in your browser's localStorage (web) or your `.env` file (CLI) - never sent to any server.
 
 ---
 
@@ -110,9 +148,9 @@ cd cli && node searchWishlist.mjs label_name
 
 Your wishlist data is fetched directly from Bandcamp each time you use the app - no data is stored by this tool. The web app runs entirely in your browser.
 
-### Public Wishlist Required
+### Private Wishlists
 
-This tool only works with **public** wishlists. If your wishlist is set to private in Bandcamp settings, you won't be able to use this tool. You can change this in your Bandcamp account settings.
+If your wishlist is private, you can still access it by adding your Bandcamp cookie. See the [Accessing Private Wishlists](#2-accessing-private-wishlists) section above for details.
 
 ### Rate Limiting
 
@@ -125,7 +163,7 @@ The app includes rate limiting to avoid being blocked:
 
 **Common issues:**
 
-- **"This wishlist is private"**: Your Bandcamp wishlist must be set to public. Change it in your Bandcamp account settings.
+- **"This wishlist is private"**: Add your Bandcamp cookie. See "Accessing Private Wishlists" above.
 - **"Rate limited"**: Wait a few minutes before trying again
 - **"404 Not Found"**: The username might be incorrect or the profile doesn't exist
 - **Web app not loading**: Make sure JavaScript is enabled and try a different browser
@@ -133,4 +171,7 @@ The app includes rate limiting to avoid being blocked:
 ## License
 
 ISC
+
+```
+
 ```

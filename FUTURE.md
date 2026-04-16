@@ -7,6 +7,7 @@ This document outlines planned and potential improvements for Better Bandcamp Wi
 ## Planned Features
 
 ### Genre Search
+
 **Status:** Not started
 
 Bandcamp releases have genre tags, but the wishlist API doesn't return them. Potential solutions:

@@ -23,7 +23,7 @@ netlify deploy --prod --dir=web/build
 
 ---
 
-## Custom Domain: 2bwl.eu
+## Custom Domain
 
 ### Step 1: Add Domain in Netlify
 
@@ -59,11 +59,11 @@ DNS can take **0-24 hours** to propagate. Use [dnschecker.org](https://dnschecke
 
 ### Where to Buy a Domain
 
-| Registrar | Pros | Cons |
-|-----------|------|------|
-| [Porkbun](https://porkbun.com) | **At cost pricing + FREE WHOIS privacy** | Less known |
-| [Cloudflare](https://cloudflare.com) | Best DNS, cheap privacy | Slightly more expensive |
-| [Namecheap](https://namecheap.com) | Popular, easy UI | Privacy costs extra |
+| Registrar                            | Pros                                     | Cons                    |
+| ------------------------------------ | ---------------------------------------- | ----------------------- |
+| [Porkbun](https://porkbun.com)       | **At cost pricing + FREE WHOIS privacy** | Less known              |
+| [Cloudflare](https://cloudflare.com) | Best DNS, cheap privacy                  | Slightly more expensive |
+| [Namecheap](https://namecheap.com)   | Popular, easy UI                         | Privacy costs extra     |
 
 **Recommendation:** **[Porkbun](https://porkbun.com)**
 
@@ -82,10 +82,10 @@ A       @       75.2.60.5
 CNAME   www     your-site.netlify.app
 ```
 
-| Record | What it does |
-|--------|--------------|
+| Record       | What it does                                           |
+| ------------ | ------------------------------------------------------ |
 | **A Record** | Points your domain (`example.com`) to Netlify's server |
-| **CNAME** | Points `www.example.com` to your Netlify site |
+| **CNAME**    | Points `www.example.com` to your Netlify site          |
 
 ### How to Update DNS
 
@@ -98,7 +98,7 @@ CNAME   www     your-site.netlify.app
 ### Common Registrar DNS Locations
 
 - **Namecheap**: Advanced DNS → Add records
-- **Cloudflare**: DNS → Add record  
+- **Cloudflare**: DNS → Add record
 - **GoDaddy**: DNS Management → Add
 - **Porkbun**: DNS → Add records
 
@@ -116,12 +116,12 @@ CNAME   www     your-site.netlify.app
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Site not loading | Check build logs in Netlify |
-| Wishlist not loading | Check API endpoint works |
-| Domain not working | Wait for DNS propagation (up to 24h) |
-| SSL not working | Enable "HTTPS" in Netlify settings |
+| Issue                | Solution                             |
+| -------------------- | ------------------------------------ |
+| Site not loading     | Check build logs in Netlify          |
+| Wishlist not loading | Check API endpoint works             |
+| Domain not working   | Wait for DNS propagation (up to 24h) |
+| SSL not working      | Enable "HTTPS" in Netlify settings   |
 
 ---
 
