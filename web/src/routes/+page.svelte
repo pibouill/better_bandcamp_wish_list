@@ -141,7 +141,7 @@
     </p>
 
     <p class="text-center text-gray-500 text-[10px] sm:text-xs mt-2 font-body">
-      Powered by the Bandcamp API. Thanks to Bandcamp.
+      Powered by the <a href="https://bandcamp.com" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300">Bandcamp</a> API. Thanks to Bandcamp.
     </p>
 
     <div class="flex justify-center gap-4 mt-4 text-xs sm:text-sm font-body">
