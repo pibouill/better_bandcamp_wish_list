@@ -125,9 +125,23 @@ cd cli && node searchWishlist.mjs label_name
 
 ## Requirements
 
-- Node.js (v18 or later)
-- npm (comes with Node.js)
-- Cron (for automatic backups on Linux/macOS)
+- **Node.js** (v18 or later) - [Download](https://nodejs.org)
+- **npm** (comes with Node.js)
+- **macOS/ Linux** - Developed and tested on macOS; Linux should work similarly
+
+## Setup
+
+After cloning the repo, install dependencies for both projects:
+
+```bash
+# Install web app dependencies
+cd web && npm install
+
+# Install CLI dependencies
+cd ../cli && npm install
+```
+
+Then run the desired project. See [Quick Start](#quick-start-web-app) for the web app or [CLI Tool](#cli-tool-local-backup) for the backup CLI.
 
 ## Important Notes
 
